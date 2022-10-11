@@ -1,0 +1,28 @@
+{
+  "name": "rock-paper-scissors-v2",
+  "version": "1.0.0",
+  "description": "A rock paper scissors game using WebSockets",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aasmith2021/rock-paper-scissors-v2.git"
+  },
+  "author": "Aaron Smith",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aasmith2021/rock-paper-scissors-v2/issues"
+  },
+  "homepage": "https://github.com/aasmith2021/rock-paper-scissors-v2#readme",
+  "dependencies": {
+    "cors": "2.8.5",
+    "express": "4.18.2",
+    "ws": "^8.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.20"
+  }
+}

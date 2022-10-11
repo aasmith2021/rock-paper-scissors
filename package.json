@@ -1,0 +1,21 @@
+{
+  "name": "rock-paper-scissors",
+  "version": "1.0.0",
+  "description": "A rock, paper, scissors game played over WebSocket connections!",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev --prefix ./rps-fe && npm run dev --prefix ./rps-be",
+    "install": "npm install --prefix ./rps-fe && npm install --prefix ./rps-be",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aasmith2021/rock-paper-scissors.git"
+  },
+  "author": "Aaron Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aasmith2021/rock-paper-scissors/issues"
+  },
+  "homepage": "https://github.com/aasmith2021/rock-paper-scissors#readme"
+}
