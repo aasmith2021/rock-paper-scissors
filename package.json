@@ -4,6 +4,8 @@
   "description": "A rock, paper, scissors game played over WebSocket connections!",
   "main": "index.js",
   "scripts": {
+    "build": "cd rps-fe && npm run build",
+    "dev": "cd rps-fe && npm run build && cd ../rps-be && npm run dev",
     "install": "cd rps-be && npm install && cd ../rps-fe && npm install",
     "test": "test"
   },
