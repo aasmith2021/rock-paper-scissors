@@ -12,4 +12,4 @@ COPY ./ ./
 CMD ["npm", "start"]
 
 # replace this with your application's default port
-EXPOSE 3000
+EXPOSE 8080
