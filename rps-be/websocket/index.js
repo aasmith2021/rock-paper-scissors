@@ -46,8 +46,6 @@ const setupWebSocketServer = () => {
     });
     
   });
-
-  console.log(`WebSocket Server is running on port ${PORT}...`);
 };
 
 module.exports = {
