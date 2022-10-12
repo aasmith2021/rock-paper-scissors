@@ -1,7 +1,7 @@
 <template>
   <div class="score-wrapper">
-    <h2>Score:</h2>
-    <div class="score-values">{{ numberOfWins }} / {{ totalNumberOfGames }}</div>
+    <h2>Your Score:</h2>
+    <div class="score-values">{{ numberOfWins }} wins / {{ totalNumberOfGames }} games</div>
   </div>
 </template>
 

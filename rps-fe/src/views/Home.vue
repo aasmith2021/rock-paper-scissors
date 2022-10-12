@@ -17,8 +17,8 @@ export default {
   data() {
     return {
       connections: [
-        { id: 1 },
-        { id: 2 },
+        { id: 1, color: '#1bfae0' },
+        { id: 2, color: '#fa1bcd' },
       ],
       webSocket: {},
       webSocketId: '',

@@ -31,7 +31,7 @@ export default {
 <style scoped>
 .title-bar-wrapper {
   width: 100%;
-  height: 75px;
+  height: 85px;
   margin: none;
   background-color: lightseagreen;
   display: flex;
