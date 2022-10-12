@@ -19,13 +19,9 @@ const setupWebSocketServer = () => {
 
   wss.on('connection', (ws) => {
     if (!wsClients.has(ws)) {
-      wsClients.set(ws, {
-        ws,
-        id: newId,
-      });
-    
+      wsClients.set(ws, { ws, id: newId });
       newId++;
-    
+      
       broadcastMessageToAllClients({ text: `New connection established for clientId ${wsClients.get(ws).id}!` });
     } else {
       broadcastMessageToAllClients({ text: `Connect reestablished for clientId ${wsClients.get(ws).id}!` });
