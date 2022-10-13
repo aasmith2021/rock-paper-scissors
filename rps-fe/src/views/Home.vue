@@ -3,6 +3,10 @@
     <TitleBar
       :connections="allConnections"
     />
+    <WaitingForOtherPlayers
+      v-if="webSocketConnectionId !== null && allConnections.length < 2"
+      class="modal"
+    />
     <NameModal
       v-if="userName === ''"
       class="modal"
@@ -26,6 +30,7 @@ import TitleBar from '@/components/TitleBar.vue';
 import NameModal from '@/components/NameModal.vue';
 import LostConnectionModal from '@/components/LostConnectionModal.vue';
 import ReadyToPlayModal from '@/components/ReadyToPlayModal.vue';
+import WaitingForOtherPlayers from '@/components/WaitingForOtherPlayers.vue';
 
 export default {
   name: 'Home',
@@ -34,6 +39,7 @@ export default {
     NameModal,
     LostConnectionModal,
     ReadyToPlayModal,
+    WaitingForOtherPlayers,
   },
   data() {
     return {
