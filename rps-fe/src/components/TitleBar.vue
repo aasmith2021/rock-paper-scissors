@@ -50,6 +50,7 @@ h1 {
 }
 
 .connections-wrapper {
+  width: 15vw;
   height: 100%;
   display: flex;
   align-items: center;

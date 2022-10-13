@@ -4,7 +4,7 @@
     :style="{ 'border-color': connection.color }"
   >
     <img src="person_icon.png" alt="person icon" />
-    <p>{{ connection.id }}</p>
+    <p>{{ connectionName }}</p>
   </div>
 </template>
 
@@ -13,6 +13,11 @@ export default {
   name: 'ConnectionSquare',
   props: {
     connection: Object,
+  },
+  computed: {
+    connectionName({ connection }) {
+      return connection.localConnection ? 'You' : connection.userName;
+    },
   },
 };
 </script>

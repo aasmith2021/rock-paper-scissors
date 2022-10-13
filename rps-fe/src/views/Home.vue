@@ -1,64 +1,75 @@
 <template>
   <div class="home">
     <TitleBar
-      :connections="connections"
+      :connections="allConnections"
+    />
+    <NameModal
+      v-if="userName === ''"
+      class="name-modal"
+      @user-name-input="setupWebSocketConnectionAndSetUserName"
     />
   </div>
 </template>
 
 <script>
 import TitleBar from '@/components/TitleBar.vue';
+import NameModal from '@/components/NameModal.vue';
 
 export default {
   name: 'Home',
   components: {
     TitleBar,
+    NameModal,
   },
   data() {
     return {
-      connections: [
-        { id: 1, color: '#1bfae0' },
-        { id: 2, color: '#fa1bcd' },
-      ],
-      webSocket: {},
-      webSocketId: '',
+      allConnections: [],
+      webSocketConnection: null,
+      webSocketConnectionId: null,
+      userName: '',
     };
   },
   methods: {
     async connectToWebSocketServer() {
-      const ws = new WebSocket('ws://localhost:3000');
-      return new Promise((resolve) => {
-        const timer = setInterval(() => {
-          if (ws.readyState === 1) {
-            clearInterval(timer);
-            this.webSocket = ws;
-            this.createWebSocketEventListener();
-            resolve(ws);
-          }
-        }, 10);
+      this.webSocketConnection = new WebSocket('ws://localhost:3000');
+      this.webSocketConnection.addEventListener('open', () => {
+        this.createWebSocketMessageEventListener();
+        this.getWebSocketConnectionIdFromServer();
+        this.sendUserNameToWebSocketServer(this.userName);
       });
     },
-    createWebSocketEventListener() {
-      this.webSocket.addEventListener('message', (event) => {
+    createWebSocketMessageEventListener() {
+      this.webSocketConnection.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
-        console.log(message);
-        if (message.idRequest) {
-          this.webSocketId = message.id;
-        } else if (message.text) {
-          console.log('Message from WebSocket server:', `"${message.text}"`);
+
+        if (message.yourConnectionId) this.webSocketConnectionId = message.yourConnectionId;
+
+        if (message.allConnections) {
+          this.allConnections = message.allConnections
+            .map((connection) => ({
+              ...connection,
+              localConnection: connection.id === this.webSocketConnectionId,
+            }))
+            .sort((connection) => {
+              if (connection.localConnection) return -1;
+              return 1;
+            });
         }
       });
     },
     sendWSMessage(message) {
-      this.webSocket.send(JSON.stringify(message));
+      this.webSocketConnection.send(JSON.stringify(message));
     },
-    requestWebSocketId() {
-      this.sendWSMessage({ idRequest: true });
+    getWebSocketConnectionIdFromServer() {
+      this.sendWSMessage({ getConnectionId: true });
     },
-  },
-  async created() {
-    await this.connectToWebSocketServer();
-    this.requestWebSocketId();
+    sendUserNameToWebSocketServer() {
+      this.sendWSMessage({ setUserName: true, userName: this.userName });
+    },
+    async setupWebSocketConnectionAndSetUserName(userName) {
+      this.userName = userName;
+      this.connectToWebSocketServer();
+    },
   },
 };
 </script>
@@ -67,5 +78,11 @@ export default {
 .home {
   height: 100vh;
   background-color: white;
+}
+
+.name-modal {
+  position: absolute;
+  left: 33vw;
+  top: 20vh;
 }
 </style>

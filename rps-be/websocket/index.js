@@ -2,45 +2,60 @@ const WebSocket = require('ws');
 
 const setupWebSocketServer = () => {
   const PORT = 3000;
-  let newId = 1;
+  let newId = 0;
+  const colors = ['#1bfae0', '#fa1bcd'];
   const wsClients = new Map();
 
   const wss = new WebSocket.Server({ port: PORT });
 
-  const sendMessageToClient = (client, message) => {
+  const generateAllConnectionsMessage = () => {
+    const allConnections = [];
+    wsClients.forEach(({ id, color, userName }) => allConnections.push({ id, color, userName }));
+
+    return { allConnections };
+  };
+
+  const sendMessageToClient = async (client, message) => {
     client.send(JSON.stringify(message));
   };
 
   const broadcastMessageToAllClients = (message) => {
     wsClients.forEach(({ ws: client }) => {
-      client.send(JSON.stringify(message));
+      sendMessageToClient(client, message);
     })
   };
 
   wss.on('connection', (ws) => {
-    if (!wsClients.has(ws)) {
-      wsClients.set(ws, { ws, id: newId });
+    if (wsClients.size < 2) {
+      wsClients.set(
+        ws,
+        {
+          ws,
+          id: newId,
+          color: colors[newId % 2],
+          userName: '',
+        }
+      );
       newId++;
-      
-      broadcastMessageToAllClients({ text: `New connection established for clientId ${wsClients.get(ws).id}!` });
-    } else {
-      broadcastMessageToAllClients({ text: `Connect reestablished for clientId ${wsClients.get(ws).id}!` });
+  
+      ws.on('message', (stringMessage) => {
+        const message = JSON.parse(stringMessage);
+  
+        if (message.getConnectionId) sendMessageToClient(ws, { yourConnectionId: wsClients.get(ws).id });
+        if (message.getAllConnections) sendMessageToClient(ws, generateAllConnectionsMessage());
+        if (message.setUserName) {
+          const currentClient = wsClients.get(ws);
+          wsClients.set(ws, { ...currentClient, userName: message.userName });
+          broadcastMessageToAllClients(generateAllConnectionsMessage());
+        }
+      });
+  
+      ws.on('close', () => {
+        const closedClientId = wsClients.get(ws).id;
+        wsClients.delete(ws);
+        broadcastMessageToAllClients({ text: `Connection with clientId ${closedClientId} closed.` });
+      });
     }
-
-    ws.on('message', (stringMessage) => {
-      const message = JSON.parse(stringMessage);
-
-      if (message.idRequest) {
-        sendMessageToClient(ws, { idRequest: true, id: wsClients.get(ws).id });
-      } else if (message.broadcastToAll) {
-        broadcastMessageToAllClients(jsonMessage);
-      }
-    });
-
-    ws.on('close', () => {
-      broadcastMessageToAllClients({ text: `Connection with clientId ${wsClients.get(ws).id} closed.` });
-    });
-    
   });
 };
 
