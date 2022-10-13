@@ -3,25 +3,35 @@
     <TitleBar
       :connections="allConnections"
     />
-    <WaitingForOtherPlayers
-      v-if="webSocketConnectionId !== null && allConnections.length < 2"
-      class="modal"
-    />
-    <NameModal
-      v-if="userName === ''"
-      class="modal"
-      @user-name-input="setupWebSocketConnectionAndSetUserName"
-    />
-    <ReadyToPlayModal
-      v-else-if="showReadyToPlay"
-      class="modal"
-      :waiting="waitingForGameToStart"
-      @ready="sendReadyToPlay"
-    />
-    <LostConnectionModal
-      v-else-if="lostConnection"
-      class="modal"
-    />
+    <div class="body">
+      <NameModal
+        v-if="userName === ''"
+        class="modal"
+        @user-name-input="setupWebSocketConnectionAndSetUserName"
+      />
+      <WaitingForOtherPlayers
+        v-else-if="webSocketConnectionId !== null && allConnections.length < 2"
+        class="modal"
+      />
+      <OtherPlayerLostConnection
+        v-else-if="otherPlayerLostConnection"
+        class="modal"
+      />
+      <LostConnectionModal
+        v-else-if="lostConnection"
+        class="modal"
+      />
+      <ReadyToPlayModal
+        v-else-if="showReadyToPlay"
+        class="modal"
+        :waiting="waitingForGameToStart"
+        @ready="sendReadyToPlay"
+      />
+      <GameBoard
+        v-else-if="gameRunning"
+        :opponent-name="opponentName"
+      />
+    </div>
   </div>
 </template>
 
@@ -31,6 +41,8 @@ import NameModal from '@/components/NameModal.vue';
 import LostConnectionModal from '@/components/LostConnectionModal.vue';
 import ReadyToPlayModal from '@/components/ReadyToPlayModal.vue';
 import WaitingForOtherPlayers from '@/components/WaitingForOtherPlayers.vue';
+import OtherPlayerLostConnection from '@/components/OtherPlayerLostConnection.vue';
+import GameBoard from '@/components/GameBoard.vue';
 
 export default {
   name: 'Home',
@@ -40,18 +52,29 @@ export default {
     LostConnectionModal,
     ReadyToPlayModal,
     WaitingForOtherPlayers,
+    OtherPlayerLostConnection,
+    GameBoard,
   },
   data() {
     return {
       allConnections: [],
       gameRunning: false,
       lostConnection: false,
+      otherPlayerLostConnection: false,
       showReadyToPlay: false,
       userName: '',
       waitingForGameToStart: false,
       webSocketConnection: null,
       webSocketConnectionId: null,
     };
+  },
+  computed: {
+    opponentName({ allConnections }) {
+      if (allConnections.length === 2) {
+        return allConnections[1].userName;
+      }
+      return 'Opponent';
+    },
   },
   methods: {
     async connectToWebSocketServer() {
@@ -73,6 +96,9 @@ export default {
 
         if (message.yourConnectionId) this.setConnectionId(message.yourConnectionId);
         if (message.allConnections) this.setAllConnections(message.allConnections);
+        if (message.lostConnection) {
+          this.otherPlayerLostConnection = true;
+        }
         if (message.startGame) this.startGame();
       });
     },
@@ -91,6 +117,7 @@ export default {
         });
 
       if (this.allConnections.length === 2) {
+        this.otherPlayerLostConnection = false;
         this.showReadyToPlay = true;
       }
     },
@@ -124,6 +151,11 @@ export default {
 .home {
   height: 100vh;
   background-color: white;
+}
+
+.body {
+  height: 90vh;
+  width: 100%;
 }
 
 .modal {

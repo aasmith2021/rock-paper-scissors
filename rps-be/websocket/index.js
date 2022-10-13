@@ -33,7 +33,7 @@ const setupWebSocketServer = () => {
         {
           ws,
           id: newId,
-          color: colors[newId % 2],
+          color: colors.pop(),
           userName: '',
         }
       );
@@ -61,9 +61,10 @@ const setupWebSocketServer = () => {
       });
   
       ws.on('close', () => {
-        const closedClientId = wsClients.get(ws).id;
+        const closedClientColor = wsClients.get(ws).color;
+        colors.push(closedClientColor);
         wsClients.delete(ws);
-        broadcastMessageToAllClients({ text: `Connection with clientId ${closedClientId} closed.` });
+        broadcastMessageToAllClients({ lostConnection: true });
       });
     }
   });
