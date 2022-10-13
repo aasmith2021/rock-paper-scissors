@@ -1,7 +1,9 @@
 <template>
   <div class="score-wrapper">
     <h2>Your Score:</h2>
-    <div class="score-values">{{ numberOfWins }} wins / {{ totalNumberOfGames }} games</div>
+    <div class="score-values">
+      {{ numberOfWins }} - {{ numberOfLosses }} - {{ numberOfTies }}
+    </div>
   </div>
 </template>
 
@@ -10,7 +12,8 @@ export default {
   data() {
     return {
       numberOfWins: 0,
-      totalNumberOfGames: 0,
+      numberOfLosses: 0,
+      numberOfTies: 0,
     };
   },
 };
@@ -29,7 +32,7 @@ h2 {
 }
 
 .score-values {
-  font: 600;
-  font-size: 1.5rem;
+  font-weight: 600;
+  font-size: 1.75rem;
 }
 </style>

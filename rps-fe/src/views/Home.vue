@@ -5,8 +5,18 @@
     />
     <NameModal
       v-if="userName === ''"
-      class="name-modal"
+      class="modal"
       @user-name-input="setupWebSocketConnectionAndSetUserName"
+    />
+    <ReadyToPlayModal
+      v-else-if="showReadyToPlay"
+      class="modal"
+      :waiting="waitingForGameToStart"
+      @ready="sendReadyToPlay"
+    />
+    <LostConnectionModal
+      v-else-if="lostConnection"
+      class="modal"
     />
   </div>
 </template>
@@ -14,18 +24,25 @@
 <script>
 import TitleBar from '@/components/TitleBar.vue';
 import NameModal from '@/components/NameModal.vue';
+import LostConnectionModal from '@/components/LostConnectionModal.vue';
+import ReadyToPlayModal from '@/components/ReadyToPlayModal.vue';
 
 export default {
   name: 'Home',
   components: {
     TitleBar,
     NameModal,
+    LostConnectionModal,
+    ReadyToPlayModal,
   },
   data() {
     return {
       allConnections: [],
+      gameRunning: false,
       lostConnection: false,
+      showReadyToPlay: false,
       userName: '',
+      waitingForGameToStart: false,
       webSocketConnection: null,
       webSocketConnectionId: null,
     };
@@ -50,6 +67,7 @@ export default {
 
         if (message.yourConnectionId) this.setConnectionId(message.yourConnectionId);
         if (message.allConnections) this.setAllConnections(message.allConnections);
+        if (message.startGame) this.startGame();
       });
     },
     setConnectionId(connectionId) {
@@ -65,6 +83,10 @@ export default {
           if (connection.localConnection) return -1;
           return 1;
         });
+
+      if (this.allConnections.length === 2) {
+        this.showReadyToPlay = true;
+      }
     },
     sendWSMessage(message) {
       this.webSocketConnection.send(JSON.stringify(message));
@@ -79,6 +101,15 @@ export default {
       this.userName = userName;
       this.connectToWebSocketServer();
     },
+    sendReadyToPlay() {
+      this.sendWSMessage({ ready: true });
+      this.waitingForGameToStart = true;
+    },
+    startGame() {
+      this.showReadyToPlay = false;
+      this.waitingForGameToStart = false;
+      this.gameRunning = true;
+    },
   },
 };
 </script>
@@ -89,7 +120,7 @@ export default {
   background-color: white;
 }
 
-.name-modal {
+.modal {
   position: absolute;
   left: 33vw;
   top: 20vh;

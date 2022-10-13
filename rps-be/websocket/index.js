@@ -5,6 +5,7 @@ const setupWebSocketServer = () => {
   let newId = 1;
   const colors = ['#fa1bcd', '#1bfae0'];
   const wsClients = new Map();
+  const clientsReady = [];
 
   const wss = new WebSocket.Server({ port: PORT });
 
@@ -47,6 +48,15 @@ const setupWebSocketServer = () => {
           const currentClient = wsClients.get(ws);
           wsClients.set(ws, { ...currentClient, userName: message.userName });
           broadcastMessageToAllClients(generateAllConnectionsMessage());
+        }
+        if(message.ready) {
+          const currentClientId = wsClients.get(ws).id;
+          if (!clientsReady.includes(currentClientId)) clientsReady.push(currentClientId);
+
+          if (clientsReady.length === wsClients.size) {
+            broadcastMessageToAllClients({ startGame: true });
+            clientsReady.splice(0, clientsReady.length);
+          }
         }
       });
   
