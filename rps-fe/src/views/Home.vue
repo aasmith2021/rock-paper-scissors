@@ -24,38 +24,47 @@ export default {
   data() {
     return {
       allConnections: [],
+      lostConnection: false,
+      userName: '',
       webSocketConnection: null,
       webSocketConnectionId: null,
-      userName: '',
     };
   },
   methods: {
     async connectToWebSocketServer() {
       this.webSocketConnection = new WebSocket('ws://localhost:3000');
+
       this.webSocketConnection.addEventListener('open', () => {
         this.createWebSocketMessageEventListener();
         this.getWebSocketConnectionIdFromServer();
         this.sendUserNameToWebSocketServer(this.userName);
+      });
+
+      this.webSocketConnection.addEventListener('close', () => {
+        this.lostConnection = true;
       });
     },
     createWebSocketMessageEventListener() {
       this.webSocketConnection.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
 
-        if (message.yourConnectionId) this.webSocketConnectionId = message.yourConnectionId;
-
-        if (message.allConnections) {
-          this.allConnections = message.allConnections
-            .map((connection) => ({
-              ...connection,
-              localConnection: connection.id === this.webSocketConnectionId,
-            }))
-            .sort((connection) => {
-              if (connection.localConnection) return -1;
-              return 1;
-            });
-        }
+        if (message.yourConnectionId) this.setConnectionId(message.yourConnectionId);
+        if (message.allConnections) this.setAllConnections(message.allConnections);
       });
+    },
+    setConnectionId(connectionId) {
+      this.webSocketConnectionId = connectionId;
+    },
+    setAllConnections(allConnections) {
+      this.allConnections = allConnections
+        .map((connection) => ({
+          ...connection,
+          localConnection: connection.id === this.webSocketConnectionId,
+        }))
+        .sort((connection) => {
+          if (connection.localConnection) return -1;
+          return 1;
+        });
     },
     sendWSMessage(message) {
       this.webSocketConnection.send(JSON.stringify(message));

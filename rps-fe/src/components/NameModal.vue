@@ -61,8 +61,9 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 30vw;
-    height: 25vh;
+    height: 20vh;
     min-width: 375px;
     min-height: 200px;
     margin-top: 50px;

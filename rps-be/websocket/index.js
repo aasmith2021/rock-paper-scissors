@@ -2,8 +2,8 @@ const WebSocket = require('ws');
 
 const setupWebSocketServer = () => {
   const PORT = 3000;
-  let newId = 0;
-  const colors = ['#1bfae0', '#fa1bcd'];
+  let newId = 1;
+  const colors = ['#fa1bcd', '#1bfae0'];
   const wsClients = new Map();
 
   const wss = new WebSocket.Server({ port: PORT });
