@@ -1,4 +1,3 @@
-# specify the node base image with your desired version node:<version>
 FROM node:14 as build
 
 WORKDIR /app
@@ -11,5 +10,5 @@ COPY ./ ./
 
 CMD ["npm", "start"]
 
-# replace this with your application's default port
 EXPOSE 8080
+EXPOSE 3000
