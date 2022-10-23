@@ -8,32 +8,45 @@
             v-if="itemSelected === null || itemSelected === 'rock'"
             :picture-source="'rock.png'"
             :alt-text="'rock'"
-            :border-color="localPlayerColor"
+            :hover-enabled="!itemLockedIn"
+            :border-color="playerItemBorderColor"
             @click="toggleSelectItem('rock')"
           />
           <Item
             v-if="itemSelected === null || itemSelected === 'paper'"
             :picture-source="'paper.png'"
             :alt-text="'paper'"
-            :border-color="localPlayerColor"
+            :hover-enabled="!itemLockedIn"
+            :border-color="playerItemBorderColor"
             @click="toggleSelectItem('paper')"
           />
           <Item
             v-if="itemSelected === null || itemSelected === 'scissors'"
             :picture-source="'scissors.png'"
             :alt-text="'scissors'"
-            :border-color="localPlayerColor"
+            :hover-enabled="!itemLockedIn"
+            :border-color="playerItemBorderColor"
             @click="toggleSelectItem('scissors')"
           />
         </div>
         <div
-          v-if="itemSelected"
+          v-if="itemSelected && !itemLockedIn"
           class="submit-section"
         >
           <p class="undo-message">
             Click item to undo your selection
           </p>
-          <button>Submit</button>
+          <button @click="lockInItem">
+            Submit
+          </button>
+        </div>
+        <div
+          v-if="itemSelected && itemLockedIn"
+          class="submit-section"
+        >
+          <p class="item-locked-in-message">
+            Your Selection Has Been Locked In!
+          </p>
         </div>
       </div>
       <div class="divider"></div>
@@ -44,7 +57,7 @@
             :picture-source="'question_mark.png'"
             :alt-text="'question mark'"
             :hover-enabled="false"
-            :border-color="opponentColor"
+            :border-color="opponentItemSelected ? itemSelectedColor : opponentColor"
           />
           <Item
             v-if="!opponentItemSelected"
@@ -60,6 +73,14 @@
             :hover-enabled="false"
             :border-color="opponentColor"
           />
+        </div>
+        <div
+          v-if="opponentItemSelected"
+          class="opponent-item-selected-section"
+        >
+          <p class="item-locked-in-message">
+            Opponent Selection Locked In!
+          </p>
         </div>
       </div>
     </div>
@@ -77,12 +98,23 @@ export default {
   props: {
     opponentName: String,
     opponentColor: String,
+    opponentItemSelected: Boolean,
     localPlayerColor: String,
   },
   data() {
     return {
+      itemLockedIn: false,
       itemSelected: null,
+      itemSelectedColor: '#fa1bcd',
     };
+  },
+  computed: {
+    playerItemBorderColor({ itemLockedIn, itemSelectedColor, localPlayerColor }) {
+      if (itemLockedIn) {
+        return itemSelectedColor;
+      }
+      return localPlayerColor;
+    },
   },
   methods: {
     toggleSelectItem(itemName) {
@@ -91,6 +123,9 @@ export default {
       } else {
         this.itemSelected = null;
       }
+    },
+    lockInItem() {
+      this.itemLockedIn = true;
     },
   },
 };
@@ -168,7 +203,16 @@ export default {
     border-color: #fa1bcd;
   }
 
-  .submit-section {
+  .submit-section, .opponent-item-selected-section {
     margin-top: 10px;
+  }
+
+  .item-locked-in-message {
+    color: #fa1bcd;
+    text-transform: uppercase;
+    font-weight: bolder;
+    margin: 0;
+    position: relative;
+    bottom: 15px;
   }
 </style>

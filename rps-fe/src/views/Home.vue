@@ -32,6 +32,7 @@
         :local-player-color="localPlayerColor"
         :opponent-color="opponentColor"
         :opponent-name="opponentName"
+        :opponent-item-selected="opponentItemSelected"
       />
     </div>
   </div>
@@ -62,6 +63,7 @@ export default {
       allConnections: [],
       gameRunning: true,
       lostConnection: false,
+      opponentItemSelected: true,
       otherPlayerLostConnection: false,
       showReadyToPlay: false,
       userName: 'a',
