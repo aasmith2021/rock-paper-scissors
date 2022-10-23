@@ -2,10 +2,12 @@ const WebSocket = require('ws');
 
 const setupWebSocketServer = () => {
   const PORT = 3000;
+  const NUMBER_OF_PLAYERS = 2;
   let newId = 1;
   const colors = ['#fa1bcd', '#1bfae0'];
   const wsClients = new Map();
   const clientsReady = [];
+  const itemsSelected = [];
 
   const wss = new WebSocket.Server({ port: PORT });
 
@@ -26,8 +28,35 @@ const setupWebSocketServer = () => {
     })
   };
 
+  const isPlayerATheWinner = (playerAItem, playerBItem) => (
+    (playerAItem === 'rock' && playerBItem === 'scissors')
+    || (playerAItem === 'scissors' && playerBItem === 'paper')
+    || (playerAItem === 'paper' && playerBItem === 'rock')
+  );
+
+  const getWinner = () => {
+    const player1Item = itemsSelected[0].item;
+    const player2Item = itemsSelected[1].item;
+
+    if (player1Item === player2Item) {
+      return 'tie';
+    } else if (isPlayerATheWinner(player1Item, player2Item)) {
+      return itemsSelected[0];
+    }
+
+    return itemsSelected[1];
+  };
+
+  const checkGameResults = (ws) => {
+    if (itemsSelected.length === NUMBER_OF_PLAYERS) {
+      const winner = getWinner();
+
+      broadcastMessageToAllClients({ winner });
+    }
+  };
+
   wss.on('connection', (ws) => {
-    if (wsClients.size < 2) {
+    if (wsClients.size < NUMBER_OF_PLAYERS) {
       wsClients.set(
         ws,
         {
@@ -57,6 +86,11 @@ const setupWebSocketServer = () => {
             broadcastMessageToAllClients({ startGame: true });
             clientsReady.splice(0, clientsReady.length);
           }
+        }
+        if (message.itemSelected) {
+          const currentClientId = wsClients.get(ws).id;
+          itemsSelected.push({ id: currentClientId, item: message.itemSelected });
+          checkGameResults();
         }
       });
   

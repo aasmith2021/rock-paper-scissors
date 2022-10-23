@@ -33,6 +33,7 @@
         :opponent-color="opponentColor"
         :opponent-name="opponentName"
         :opponent-item-selected="opponentItemSelected"
+        @item-selected="sendPlayerSelection"
       />
     </div>
   </div>
@@ -61,12 +62,12 @@ export default {
   data() {
     return {
       allConnections: [],
-      gameRunning: true,
+      gameRunning: false,
       lostConnection: false,
-      opponentItemSelected: true,
+      opponentItemSelected: false,
       otherPlayerLostConnection: false,
       showReadyToPlay: false,
-      userName: 'a',
+      userName: '',
       waitingForGameToStart: false,
       webSocketConnection: null,
       webSocketConnectionId: null,
@@ -116,6 +117,9 @@ export default {
           this.otherPlayerLostConnection = true;
         }
         if (message.startGame) this.startGame();
+        if (message.winner) {
+          console.log(message);
+        }
       });
     },
     setConnectionId(connectionId) {
@@ -158,6 +162,9 @@ export default {
       this.showReadyToPlay = false;
       this.waitingForGameToStart = false;
       this.gameRunning = true;
+    },
+    sendPlayerSelection(itemSelected) {
+      this.sendWSMessage({ itemSelected });
     },
   },
 };

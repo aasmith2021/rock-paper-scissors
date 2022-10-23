@@ -118,14 +118,17 @@ export default {
   },
   methods: {
     toggleSelectItem(itemName) {
-      if (!this.itemSelected) {
-        this.itemSelected = itemName;
-      } else {
-        this.itemSelected = null;
+      if (!this.itemLockedIn) {
+        if (!this.itemSelected) {
+          this.itemSelected = itemName;
+        } else {
+          this.itemSelected = null;
+        }
       }
     },
     lockInItem() {
       this.itemLockedIn = true;
+      this.$emit('item-selected', this.itemSelected);
     },
   },
 };
