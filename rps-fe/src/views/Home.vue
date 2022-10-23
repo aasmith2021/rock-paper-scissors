@@ -29,6 +29,8 @@
       />
       <GameBoard
         v-else-if="gameRunning"
+        :local-player-color="localPlayerColor"
+        :opponent-color="opponentColor"
         :opponent-name="opponentName"
       />
     </div>
@@ -58,11 +60,11 @@ export default {
   data() {
     return {
       allConnections: [],
-      gameRunning: false,
+      gameRunning: true,
       lostConnection: false,
       otherPlayerLostConnection: false,
       showReadyToPlay: false,
-      userName: '',
+      userName: 'a',
       waitingForGameToStart: false,
       webSocketConnection: null,
       webSocketConnectionId: null,
@@ -74,6 +76,18 @@ export default {
         return allConnections[1].userName;
       }
       return 'Opponent';
+    },
+    localPlayerColor({ allConnections }) {
+      if (allConnections.length === 2) {
+        return allConnections.find(({ localConnection }) => localConnection).color;
+      }
+      return 'purple';
+    },
+    opponentColor({ allConnections }) {
+      if (allConnections.length === 2) {
+        return allConnections.find(({ localConnection }) => !localConnection).color;
+      }
+      return 'black';
     },
   },
   methods: {

@@ -11,6 +11,7 @@
     <button
       :class="{ 'validation-message-button': !isValidInput }"
       @click="submitUserName"
+      @keyup.enter="submitUserName"
     >
       Submit
     </button>

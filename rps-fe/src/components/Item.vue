@@ -1,14 +1,37 @@
 <template>
-  <div>
-    <img :src="pictureSource" :alt="altText" />
+  <div
+    :class="{ 'hover-enabled': hoverEnabled }"
+    :style="{ '--non-hover-border-color': borderColor }"
+  >
+    <img
+      :src="pictureSource"
+      :alt="altText"
+    />
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    pictureSource: String,
-    altText: String,
+    pictureSource: {
+      type: String,
+      required: true,
+    },
+    altText: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    borderColor: {
+      type: String,
+      required: false,
+      default: 'purple',
+    },
+    hoverEnabled: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
 };
 </script>
@@ -17,7 +40,9 @@ export default {
   div {
     width: 100px;
     height: 150px;
-    border: 5px solid purple;
+    border-width: 5px;
+    border-color: var(--non-hover-border-color);
+    border-style: solid;
     border-radius: 5px;
     display: flex;
     align-items: center;
@@ -25,7 +50,7 @@ export default {
     background-color: white;
   }
 
-  div:hover {
+  div.hover-enabled:hover {
     border-color: lightseagreen;
   }
 

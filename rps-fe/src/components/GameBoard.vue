@@ -6,19 +6,34 @@
         <div class="items">
           <Item
             v-if="itemSelected === null || itemSelected === 'rock'"
-            :picture-source="'rps.png'"
+            :picture-source="'rock.png'"
             :alt-text="'rock'"
+            :border-color="localPlayerColor"
+            @click="toggleSelectItem('rock')"
           />
           <Item
             v-if="itemSelected === null || itemSelected === 'paper'"
-            :picture-source="'rps.png'"
+            :picture-source="'paper.png'"
             :alt-text="'paper'"
+            :border-color="localPlayerColor"
+            @click="toggleSelectItem('paper')"
           />
           <Item
             v-if="itemSelected === null || itemSelected === 'scissors'"
-            :picture-source="'rps.png'"
+            :picture-source="'scissors.png'"
             :alt-text="'scissors'"
+            :border-color="localPlayerColor"
+            @click="toggleSelectItem('scissors')"
           />
+        </div>
+        <div
+          v-if="itemSelected"
+          class="submit-section"
+        >
+          <p class="undo-message">
+            Click item to undo your selection
+          </p>
+          <button>Submit</button>
         </div>
       </div>
       <div class="divider"></div>
@@ -26,19 +41,24 @@
         <h1>{{ opponentName }}</h1>
         <div class="items">
           <Item
-            v-if="itemSelected === null || itemSelected === 'rock'"
-            :picture-source="'rps.png'"
-            :alt-text="'rock'"
+            :picture-source="'question_mark.png'"
+            :alt-text="'question mark'"
+            :hover-enabled="false"
+            :border-color="opponentColor"
           />
           <Item
-            v-if="itemSelected === null || itemSelected === 'paper'"
-            :picture-source="'rps.png'"
-            :alt-text="'paper'"
+            v-if="!opponentItemSelected"
+            :picture-source="'question_mark.png'"
+            :alt-text="'question mark'"
+            :hover-enabled="false"
+            :border-color="opponentColor"
           />
           <Item
-            v-if="itemSelected === null || itemSelected === 'scissors'"
-            :picture-source="'rps.png'"
-            :alt-text="'scissors'"
+            v-if="!opponentItemSelected"
+            :picture-source="'question_mark.png'"
+            :alt-text="'question mark'"
+            :hover-enabled="false"
+            :border-color="opponentColor"
           />
         </div>
       </div>
@@ -56,11 +76,22 @@ export default {
   },
   props: {
     opponentName: String,
+    opponentColor: String,
+    localPlayerColor: String,
   },
   data() {
     return {
       itemSelected: null,
     };
+  },
+  methods: {
+    toggleSelectItem(itemName) {
+      if (!this.itemSelected) {
+        this.itemSelected = itemName;
+      } else {
+        this.itemSelected = null;
+      }
+    },
   },
 };
 </script>
@@ -93,7 +124,7 @@ export default {
   }
 
   .items {
-    height: 70%;
+    height: 60%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -110,5 +141,34 @@ export default {
 
   h1 {
     margin-top: 25px;
+    margin-bottom: 0;
+  }
+
+  .undo-message {
+    color: darkslategray;
+    font-style: italic;
+    margin: 0;
+    position: relative;
+    bottom: 15px;
+  }
+
+  button {
+    color: white;
+    background-color: lightseagreen;
+    border: 3px solid lightseagreen;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    width: 100px;
+    height: 30px;
+    margin-top: 5px;
+  }
+
+  button:hover {
+    border-color: #fa1bcd;
+  }
+
+  .submit-section {
+    margin-top: 10px;
   }
 </style>
