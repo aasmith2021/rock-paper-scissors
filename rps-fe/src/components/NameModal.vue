@@ -1,5 +1,8 @@
 <template>
-  <div class="modal-wrapper">
+  <div
+    class="modal-wrapper"
+    @keyup.enter="submitUserName"
+  >
     <h1>Welcome! Please enter your name:</h1>
     <input v-model="userName" type="text" />
     <p
@@ -11,7 +14,6 @@
     <button
       :class="{ 'validation-message-button': !isValidInput }"
       @click="submitUserName"
-      @keyup.enter="submitUserName"
     >
       Submit
     </button>

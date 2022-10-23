@@ -52,6 +52,7 @@ export default {
 
   div.hover-enabled:hover {
     border-color: lightseagreen;
+    cursor: pointer;
   }
 
   img {

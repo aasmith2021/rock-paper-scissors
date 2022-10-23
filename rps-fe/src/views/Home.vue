@@ -2,6 +2,7 @@
   <div class="home">
     <TitleBar
       :connections="allConnections"
+      :score="score"
     />
     <div class="body">
       <NameModal
@@ -35,6 +36,12 @@
         :opponent-item-selected="opponentItemSelected"
         @item-selected="sendPlayerSelection"
       />
+      <WinnerModal
+        v-if="winner"
+        :all-connections="allConnections"
+        :winner="winner"
+        @reset-game="resetGame"
+      />
     </div>
   </div>
 </template>
@@ -47,6 +54,7 @@ import ReadyToPlayModal from '@/components/ReadyToPlayModal.vue';
 import WaitingForOtherPlayers from '@/components/WaitingForOtherPlayers.vue';
 import OtherPlayerLostConnection from '@/components/OtherPlayerLostConnection.vue';
 import GameBoard from '@/components/GameBoard.vue';
+import WinnerModal from '@/components/WinnerModal.vue';
 
 export default {
   name: 'Home',
@@ -58,6 +66,7 @@ export default {
     WaitingForOtherPlayers,
     OtherPlayerLostConnection,
     GameBoard,
+    WinnerModal,
   },
   data() {
     return {
@@ -66,17 +75,23 @@ export default {
       lostConnection: false,
       opponentItemSelected: false,
       otherPlayerLostConnection: false,
+      score: {
+        win: 0,
+        lose: 0,
+        tie: 0,
+      },
       showReadyToPlay: false,
       userName: '',
       waitingForGameToStart: false,
       webSocketConnection: null,
       webSocketConnectionId: null,
+      winner: null,
     };
   },
   computed: {
     opponentName({ allConnections }) {
       if (allConnections.length === 2) {
-        return allConnections[1].userName;
+        return allConnections.find(({ localConnection }) => !localConnection).userName;
       }
       return 'Opponent';
     },
@@ -117,9 +132,8 @@ export default {
           this.otherPlayerLostConnection = true;
         }
         if (message.startGame) this.startGame();
-        if (message.winner) {
-          console.log(message);
-        }
+        if (message.opponentItemSelected) this.setOpponentItemSelected();
+        if (message.winner) this.setWinner(message.winner);
       });
     },
     setConnectionId(connectionId) {
@@ -165,6 +179,23 @@ export default {
     },
     sendPlayerSelection(itemSelected) {
       this.sendWSMessage({ itemSelected });
+    },
+    setOpponentItemSelected() {
+      this.opponentItemSelected = true;
+    },
+    setWinner(winner) {
+      this.winner = winner;
+    },
+    resetGame(isOutcomeTie, didLocalUserWin) {
+      if (isOutcomeTie) {
+        this.score.tie += 1;
+      } else if (didLocalUserWin) {
+        this.score.win += 1;
+      } else {
+        this.score.lose += 1;
+      }
+      this.opponentItemSelected = false;
+      this.winner = null;
     },
   },
 };

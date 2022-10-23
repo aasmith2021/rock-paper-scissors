@@ -1,6 +1,8 @@
 <template>
   <div class="title-bar-wrapper">
-    <Score />
+    <Score
+      :score="score"
+    />
     <h1>Rock, Paper, Scissors!</h1>
     <div class="connections-wrapper">
       <ConnectionSquare
@@ -24,6 +26,7 @@ export default {
   },
   props: {
     connections: Array,
+    score: Object,
   },
 };
 </script>

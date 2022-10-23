@@ -82,6 +82,7 @@ export default {
     width: 150px;
     height: 30px;
     margin-top: 30px;
+    cursor: pointer;
   }
 
   button:hover {

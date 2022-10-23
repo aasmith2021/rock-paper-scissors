@@ -4,12 +4,14 @@ const setupWebSocketServer = () => {
   const PORT = 3000;
   const NUMBER_OF_PLAYERS = 2;
   let newId = 1;
-  const colors = ['#fa1bcd', '#1bfae0'];
+  const colors = ['#7b32a8', '#1bfae0'];
   const wsClients = new Map();
   const clientsReady = [];
   const itemsSelected = [];
 
   const wss = new WebSocket.Server({ port: PORT });
+
+  const emptyArray = (arrayToEmpty) => arrayToEmpty.splice(0, arrayToEmpty.length);
 
   const generateAllConnectionsMessage = () => {
     const allConnections = [];
@@ -39,7 +41,7 @@ const setupWebSocketServer = () => {
     const player2Item = itemsSelected[1].item;
 
     if (player1Item === player2Item) {
-      return 'tie';
+      return { id: null, tie: true, item: player1Item };
     } else if (isPlayerATheWinner(player1Item, player2Item)) {
       return itemsSelected[0];
     }
@@ -47,11 +49,11 @@ const setupWebSocketServer = () => {
     return itemsSelected[1];
   };
 
-  const checkGameResults = (ws) => {
+  const checkGameProgress = () => {
     if (itemsSelected.length === NUMBER_OF_PLAYERS) {
       const winner = getWinner();
-
       broadcastMessageToAllClients({ winner });
+      emptyArray(itemsSelected);
     }
   };
 
@@ -84,13 +86,20 @@ const setupWebSocketServer = () => {
 
           if (clientsReady.length === wsClients.size) {
             broadcastMessageToAllClients({ startGame: true });
-            clientsReady.splice(0, clientsReady.length);
+            emptyArray(clientsReady);
           }
         }
         if (message.itemSelected) {
           const currentClientId = wsClients.get(ws).id;
+
+          for (const client of wsClients.keys()) {
+            if (client !== ws) {
+              sendMessageToClient(client, { opponentItemSelected: message.itemSelected });
+            }
+          }
+
           itemsSelected.push({ id: currentClientId, item: message.itemSelected });
-          checkGameResults();
+          checkGameProgress();
         }
       });
   

@@ -2,19 +2,16 @@
   <div class="score-wrapper">
     <h2>Your Score:</h2>
     <div class="score-values">
-      {{ numberOfWins }} - {{ numberOfLosses }} - {{ numberOfTies }}
+      {{ score.win }} - {{ score.lose }} - {{ score.tie }}
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      numberOfWins: 0,
-      numberOfLosses: 0,
-      numberOfTies: 0,
-    };
+  name: 'Score',
+  props: {
+    score: Object,
   },
 };
 </script>

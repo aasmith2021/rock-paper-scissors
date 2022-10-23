@@ -108,6 +108,14 @@ export default {
       itemSelectedColor: '#fa1bcd',
     };
   },
+  watch: {
+    opponentItemSelected(newValue) {
+      if (newValue === false) {
+        this.itemLockedIn = false;
+        this.itemSelected = null;
+      }
+    },
+  },
   computed: {
     playerItemBorderColor({ itemLockedIn, itemSelectedColor, localPlayerColor }) {
       if (itemLockedIn) {
