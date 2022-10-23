@@ -6,7 +6,7 @@
     "dev": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build && npm run copy-build-to-rps-be",
-    "copy-build-to-rps-be": "cp -r ./dist/. ../rps-be/website/build",
+    "copy-build-to-rps-be": "rm -r ../rps-be/website/build/* && cp -r ./dist/. ../rps-be/website/build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "postbuild": "cd .."
